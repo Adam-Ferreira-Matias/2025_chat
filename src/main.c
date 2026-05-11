@@ -4,6 +4,7 @@
 int main(int ac, char **av)
 {
     struct config cfg;
+    struct chat_env env;
     int server_fd;
 
     if (parse_args(ac, av, &cfg) != 0 || cfg.port == 0 || cfg.limit == 0) {
@@ -15,7 +16,10 @@ int main(int ac, char **av)
         write(2, "Failed to start server\n", 23);
         return (1);
     }
-    write(1, "Server started successfully.\n", 29);
+    if (init_env(&env, &cfg, server_fd) == 0) {
+        run_chat(&env);
+        free_env(&env);
+    }
     close(server_fd);
     return (0);
 }
