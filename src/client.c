@@ -38,6 +38,13 @@ void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len)
     }
 }
 
+void disconnect_client(struct chat_env *env, int i)
+{
+    close(env->fds[i].fd);
+    env->fds[i].fd = -1;
+    env->clients[i - 1].fd = -1;
+}
+
 void handle_client(struct chat_env *env, int i)
 {
     char buf[1024];
@@ -45,10 +52,12 @@ void handle_client(struct chat_env *env, int i)
 
     len = read(env->fds[i].fd, buf, 1024);
     if (len <= 0) {
-        close(env->fds[i].fd);
-        env->fds[i].fd = -1;
-        env->clients[i - 1].fd = -1;
-    } else {
-        broadcast_msg(env, env->fds[i].fd, buf, len);
+        disconnect_client(env, i);
+        return;
     }
+    if (len >= 7 && stu_strncmp(buf, "/logout", 7) == 0) {
+        disconnect_client(env, i);
+        return;
+    }
+    broadcast_msg(env, env->fds[i].fd, buf, len);
 }

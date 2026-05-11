@@ -3,20 +3,20 @@
 
 int main(int ac, char **av)
 {
-    struct config cfg;
+    struct config settings;
     struct chat_env env;
     int server_fd;
 
-    if (parse_args(ac, av, &cfg) != 0 || cfg.port == 0 || cfg.limit == 0) {
+    if (parse_args(ac, av, &settings) != 0 || settings.port == 0 || settings.limit == 0) {
         write(2, "Usage: ./chat_server -p PORT -l LIMIT [-f]\n", 43);
         return (1);
     }
-    server_fd = init_server(&cfg);
+    server_fd = init_server(&settings);
     if (server_fd < 0) {
         write(2, "Failed to start server\n", 23);
         return (1);
     }
-    if (init_env(&env, &cfg, server_fd) == 0) {
+    if (init_env(&env, &settings, server_fd) == 0) {
         run_chat(&env);
         free_env(&env);
     }
