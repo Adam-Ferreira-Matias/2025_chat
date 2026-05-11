@@ -28,16 +28,16 @@ int attempt_bind(int sock, int port)
     return (0);
 }
 
-int bind_server(int sock, struct config *cfg)
+int bind_server(int sock, struct config *settings)
 {
     int bound;
 
     bound = 0;
     while (!bound) {
-        if (attempt_bind(sock, cfg->port) == 0) {
+        if (attempt_bind(sock, settings->port) == 0) {
             bound = 1;
-        } else if (cfg->fallback) {
-            cfg->port += 1;
+        } else if (settings->fallback) {
+            settings->port += 1;
         } else {
             return (1);
         }
@@ -45,7 +45,7 @@ int bind_server(int sock, struct config *cfg)
     return (0);
 }
 
-int init_server(struct config *cfg)
+int init_server(struct config *settings)
 {
     int sock;
 
@@ -53,11 +53,11 @@ int init_server(struct config *cfg)
     if (sock < 0) {
         return (-1);
     }
-    if (configure_socket(sock) || bind_server(sock, cfg)) {
+    if (configure_socket(sock) || bind_server(sock, settings)) {
         close(sock);
         return (-1);
     }
-    if (listen(sock, cfg->limit) < 0) {
+    if (listen(sock, settings->limit) < 0) {
         close(sock);
         return (-1);
     }
