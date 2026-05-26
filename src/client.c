@@ -112,12 +112,8 @@ int stu_strcmp_space(const char *s1, const char *s2)
     }
     return 0;
 }
-<<<<<<< HEAD
 
 static int is_valid_nick(char *str)
-=======
-/*void nick (struct chat_env *env, int i)
->>>>>>> main
 {
     int i;
 
