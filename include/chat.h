@@ -20,6 +20,14 @@ struct chat_env {
     struct client *clients;
 };
 
+typedef void (*f_cmd)(struct chat_env *env, int i, char *buf, int len);
+
+struct command {
+    const char *prefix;
+    int prefix_len;
+    f_cmd func;
+};
+
 int stu_strcmp(const char *s1, const char *s2);
 int stu_strncmp(const char *s1, const char *s2, int n);
 int stu_atoi(const char *str);
@@ -34,5 +42,8 @@ void accept_client(struct chat_env *env);
 void disconnect_client(struct chat_env *env, int i);
 void handle_client(struct chat_env *env, int i);
 void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len);
+
+void cmd_logout(struct chat_env *env, int i, char *buf, int len);
+int process_command(struct chat_env *env, int i, char *buf, int len);
 
 #endif
