@@ -9,6 +9,7 @@ void cmd_logout(struct chat_env *env, int i)
 }
 
 struct chat OP_TABLE[] = {
+    {"/nick", nick},
     {"/logout", cmd_logout},
 };
 
@@ -39,12 +40,26 @@ void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len)
 {
     int i;
     int fd;
+    char *prefix;
 
+    prefix = "Guest";
+    i = 1;
+    while (i <= env->max_clients) {
+        if (env->fds[i].fd == sender_fd) {
+            if (env->clients[i - 1].nick != NULL) {
+                prefix = env->clients[i - 1].nick;
+            }
+            break;
+        }
+        i += 1;
+    }
     i = 1;
     while (i <= env->max_clients) {
         fd = env->fds[i].fd;
         if (fd != -1 && fd != sender_fd) {
-            write(fd, msg, (size_t) len);
+            write(fd, prefix, stu_strlen(prefix));
+            write(fd, " : ", 3);
+            write(fd, msg, (size_t)len);
         }
         i += 1;
     }
@@ -65,12 +80,14 @@ void handle_client(struct chat_env *env, int i)
 
     j = 0;
     len = read(env->fds[i].fd, buf, 1024);
+    buf[len] = '\0';
     if (len <= 0) {
         disconnect_client(env, i);
         return;
     }
     if (buf[0] == '/') {
         while (j < OP_TABLE_LEN) {
+            env->clients[i - 1].buf = buf;
             if (stu_strcmp_space(OP_TABLE[j].symbol, buf) == 0) {
                 OP_TABLE[j].fptr(env, i);
                 return;
@@ -95,7 +112,37 @@ int stu_strcmp_space(const char *s1, const char *s2)
     }
     return 0;
 }
+<<<<<<< HEAD
+
+static int is_valid_nick(char *str)
+=======
 /*void nick (struct chat_env *env, int i)
+>>>>>>> main
 {
-    return ;
-}*/
+    int i;
+
+    i = 0;
+    while (str[i] && str[i] != '\n') {
+        if (!((str[i] >= 'a' && str[i] <= 'z')
+            || (str[i] >= 'A' && str[i] <= 'Z')
+            || (str[i] >= '0' && str[i] <= '9')
+            || str[i] == '-' || str[i] == '_')) {
+            return 0;
+        }
+        i += 1;
+    }
+    return (1);
+}
+
+void nick (struct chat_env *env, int i)
+{
+    char *buf;
+
+    buf = env->clients[i - 1].buf;
+    if (!is_valid_nick(buf + 6)) {
+        write(env->clients[i - 1].fd, "NAH HUNNNN error your pseudo aren't correct\n", 44);
+        return ;
+    }
+    env->clients[i - 1].nick = stu_strdup(buf + 6);
+    env->clients[i - 1].nick[stu_strlen(env->clients[i - 1].nick) - 1] = '\0';
+}
