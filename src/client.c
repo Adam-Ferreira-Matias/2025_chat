@@ -2,9 +2,15 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+void cmd_logout(struct chat_env *env, int i)
+{
+    broadcast_msg(env, env->fds[i].fd, "Someone leave\n", 14);
+    disconnect_client(env, i);
+}
+
 struct chat OP_TABLE[] = {
-        {"/nick", nick},
-        {"/logout", disconnect_client},
+    {"/nick", nick},
+    {"/logout", cmd_logout},
 };
 
 const int OP_TABLE_LEN = sizeof(OP_TABLE) / sizeof(struct chat);
@@ -84,6 +90,7 @@ void handle_client(struct chat_env *env, int i)
             env->clients[i - 1].buf = buf;
             if (stu_strcmp_space(OP_TABLE[j].symbol, buf) == 0) {
                 OP_TABLE[j].fptr(env, i);
+                return;
             }
             j += 1;
         }
@@ -105,8 +112,12 @@ int stu_strcmp_space(const char *s1, const char *s2)
     }
     return 0;
 }
+<<<<<<< HEAD
 
 static int is_valid_nick(char *str)
+=======
+/*void nick (struct chat_env *env, int i)
+>>>>>>> main
 {
     int i;
 
