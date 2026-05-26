@@ -56,6 +56,7 @@ void handle_client(struct chat_env *env, int i)
         return;
     }
     if (len >= 7 && stu_strncmp(buf, "/logout", 7) == 0) {
+        broadcast_msg(env, env->fds[i].fd, "Someone leave\n", 14);
         disconnect_client(env, i);
         return;
     }

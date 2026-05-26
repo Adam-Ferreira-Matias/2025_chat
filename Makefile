@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -Iinclude
 
 SRC = src/main.c src/parse.c src/utils.c src/server.c \
-      src/env.c src/client.c src/loop.c src/command.c
+      src/env.c src/client.c src/loop.c
 OBJ = $(SRC:.c=.o)
 NAME = chat_server
 
