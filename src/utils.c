@@ -1,4 +1,5 @@
 #include "chat.h"
+#include <stdlib.h>
 
 int stu_strcmp(const char *s1, const char *s2)
 {
@@ -37,4 +38,35 @@ int stu_strncmp(const char *s1, const char *s2, int n)
         i += 1;
     }
     return (s1[i] - s2[i]);
+}
+
+unsigned int stu_strlen(const char *str)
+{
+    unsigned int i;
+
+    i = 0;
+    while (str[i] != '\0') {
+        i = i + 1;
+    }
+    return i;
+}
+
+char *stu_strdup(char *str)
+{
+    char *str_copy;
+    unsigned int size;
+    unsigned int i;
+
+    size = 0;
+    i = 0;
+    while (str[size] != '\0') {
+        size += 1;
+    }
+    size += 1;
+    str_copy = malloc(sizeof (int) * size);
+    while (i < size) {
+        str_copy[i] = str[i];
+        i += 1;
+    }
+    return str_copy;
 }
