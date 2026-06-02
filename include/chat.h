@@ -45,5 +45,6 @@ void handle_client(struct chat_env *env, int i);
 void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len);
 void nick (struct chat_env *env, int i);
 void cmd_logout(struct chat_env *env, int i);
+void shrek(struct chat_env *env, int i);
 
 #endif

@@ -1,6 +1,7 @@
 #include "chat.h"
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 void cmd_logout(struct chat_env *env, int i)
 {
@@ -11,6 +12,7 @@ void cmd_logout(struct chat_env *env, int i)
 struct chat OP_TABLE[] = {
     {"/nick", nick},
     {"/logout", cmd_logout},
+    {"/shrek", shrek},
 };
 
 const int OP_TABLE_LEN = sizeof(OP_TABLE) / sizeof(struct chat);
@@ -141,4 +143,28 @@ void nick (struct chat_env *env, int i)
     }
     env->clients[i - 1].nick = stu_strdup(buf + 6);
     env->clients[i - 1].nick[stu_strlen(env->clients[i - 1].nick) - 1] = '\0';
+}
+
+void shrek(struct chat_env *env, int i)
+{
+    char buf[4096];
+    int  fd;
+    int  len;
+
+    write(env->clients[i - 1].fd, "vous avez invoqué shrek!\n\n", 26);
+    broadcast_msg(env, env->fds[i].fd, "a invoqué shrek!\n\n", 18);
+    fd = open("shrek.txt", O_RDONLY);
+    if (fd < 0) {
+        return;
+    }
+    while ((len = read(fd, buf, sizeof(buf))) > 0) {
+        i = 1;
+        while (i <= env->max_clients) {
+            if (env->fds[i].fd != -1) {
+                write(env->fds[i].fd, buf, len);
+            }
+            i += 1;
+        }
+    }
+    close(fd);
 }
