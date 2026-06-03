@@ -2,6 +2,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 void cmd_logout(struct chat_env *env, int i)
 {
@@ -33,6 +34,7 @@ void accept_client(struct chat_env *env)
         if (env->fds[i].fd == -1) {
             env->fds[i].fd = fd;
             env->clients[i - 1].fd = fd;
+            env->clients[i - 1].nick = NULL;
             return;
         }
         i += 1;
@@ -74,6 +76,8 @@ void disconnect_client(struct chat_env *env, int i)
     close(env->fds[i].fd);
     env->fds[i].fd = -1;
     env->clients[i - 1].fd = -1;
+    free(env->clients[i - 1].nick);
+    env->clients[i - 1].nick = NULL;
 }
 
 void handle_client(struct chat_env *env, int i)
