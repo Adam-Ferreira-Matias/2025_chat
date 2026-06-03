@@ -14,6 +14,7 @@ struct chat OP_TABLE[] = {
     {"/logout", cmd_logout},
     {"/shrek", shrek},
     {"/among_us", among_us},
+    {"/help", help},
 };
 
 const int OP_TABLE_LEN = sizeof(OP_TABLE) / sizeof(struct chat);
@@ -154,7 +155,7 @@ void shrek(struct chat_env *env, int i)
 
     write(env->clients[i - 1].fd, "you have summon shrek!\n", 23);
     broadcast_msg(env, env->fds[i].fd, "has summon shrek!\n", 18);
-    fd = open("shrek.txt", O_RDONLY);
+    fd = open("image_ascii/shrek.txt", O_RDONLY);
     if (fd < 0) {
         return;
     }
@@ -178,7 +179,7 @@ void among_us(struct chat_env *env, int i)
 
     write(env->clients[i - 1].fd, "you have summon among us!\n", 26);
     broadcast_msg(env, env->fds[i].fd, "has summon among us!\n", 21);
-    fd = open("among_us.txt", O_RDONLY);
+    fd = open("image_ascii/among_us.txt", O_RDONLY);
     if (fd < 0) {
         return;
     }
@@ -194,3 +195,10 @@ void among_us(struct chat_env *env, int i)
     close(fd);
 }
 
+void help(struct chat_env *env, int i)
+{
+    write(env->clients[i - 1].fd, "   /nick:         for setup your nickname\n \
+  /logout:       to leave the server\n \
+  /shrek:        cat an ascii of shrek\n \
+  /among_us:     cat an ascii of among us\n", 163);
+}
