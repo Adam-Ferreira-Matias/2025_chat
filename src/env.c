@@ -7,7 +7,7 @@ int init_env(struct chat_env *env, struct config *settings, int server_fd)
 
     env->server_fd = server_fd;
     env->max_clients = settings->limit;
-    env->fds = malloc(sizeof(struct pollfd) * (size_t) (settings->limit + 1));
+    env->fds = malloc(sizeof(struct pollfd) * (size_t) (settings->limit + 2));
     env->clients = malloc(sizeof(struct client) * (size_t) settings->limit);
     if (!env->fds || !env->clients) {
         return (1);
@@ -21,6 +21,8 @@ int init_env(struct chat_env *env, struct config *settings, int server_fd)
         env->clients[i - 1].fd = -1;
         i += 1;
     }
+    env->fds[settings->limit + 1].fd = 0;
+    env->fds[settings->limit + 1].events = POLLIN;
     return (0);
 }
 
@@ -33,3 +35,4 @@ void free_env(struct chat_env *env)
         free(env->clients);
     }
 }
+
