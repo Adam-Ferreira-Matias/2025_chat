@@ -14,6 +14,7 @@ struct chat OP_TABLE[] = {
     {"/logout", cmd_logout},
     {"/shrek", shrek},
     {"/among_us", among_us},
+    {"/list", cmd_list},
 };
 
 const int OP_TABLE_LEN = sizeof(OP_TABLE) / sizeof(struct chat);
@@ -177,7 +178,7 @@ void among_us(struct chat_env *env, int i)
     int  len;
 
     write(env->clients[i - 1].fd, "you have summon among us!\n", 26);
-    broadcast_msg(env, env->fds[i].fd, "has summon among us!\n", 21);
+    broadcast_msg(env, env->fds[i].fd, "AMOGUS !\n", 9);
     fd = open("among_us.txt", O_RDONLY);
     if (fd < 0) {
         return;
@@ -194,3 +195,27 @@ void among_us(struct chat_env *env, int i)
     close(fd);
 }
 
+void cmd_list(struct chat_env *env, int i)
+{
+    int j;
+    int requester_fd;
+
+    requester_fd = env->clients[i - 1].fd;
+    write(requester_fd, "Connected users:\n", 17);
+    j = 1;
+    while (j <= env->max_clients) {
+        if (env->fds[j].fd != -1) {
+            write(requester_fd, "- ", 2);
+            if (env->clients[j - 1].nick != NULL) {
+                write(requester_fd, env->clients[j - 1].nick, stu_strlen(env->clients[j - 1].nick));
+            } else {
+                write(requester_fd, "Guest", 5);
+            }
+            if (env->fds[j].fd == requester_fd) {
+                write(requester_fd, " (you)", 6);
+            }
+            write(requester_fd, "\n", 1);
+        }
+        j += 1;
+    }
+}
