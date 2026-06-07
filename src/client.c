@@ -1,8 +1,8 @@
-#include "chat.h"
-#include <sys/socket.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include "chat.h"
 
 void cmd_logout(struct chat_env *env, int i)
 {
@@ -66,7 +66,7 @@ void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len)
         if (fd != -1 && fd != sender_fd) {
             write(fd, prefix, stu_strlen(prefix));
             write(fd, " : ", 3);
-            write(fd, msg, (size_t)len);
+            write(fd, msg, (size_t) len);
         }
         i += 1;
     }
@@ -139,14 +139,15 @@ static int is_valid_nick(char *str)
     return (1);
 }
 
-void nick (struct chat_env *env, int i)
+void nick(struct chat_env *env, int i)
 {
     char *buf;
 
     buf = env->clients[i - 1].buf;
     if (!is_valid_nick(buf + 6)) {
-        write(env->clients[i - 1].fd, "NAH HUNNNN error your pseudo aren't correct\n", 44);
-        return ;
+        write(env->clients[i - 1].fd,
+            "NAH HUNNNN error your pseudo aren't correct\n", 44);
+        return;
     }
     env->clients[i - 1].nick = stu_strdup(buf + 6);
     env->clients[i - 1].nick[stu_strlen(env->clients[i - 1].nick) - 1] = '\0';
@@ -155,8 +156,8 @@ void nick (struct chat_env *env, int i)
 void shrek(struct chat_env *env, int i)
 {
     char buf[4096];
-    int  fd;
-    int  len;
+    int fd;
+    int len;
 
     write(env->clients[i - 1].fd, "you have summon shrek!\n", 23);
     broadcast_msg(env, env->fds[i].fd, "has summon shrek!\n", 18);
@@ -179,8 +180,8 @@ void shrek(struct chat_env *env, int i)
 void among_us(struct chat_env *env, int i)
 {
     char buf[4096];
-    int  fd;
-    int  len;
+    int fd;
+    int len;
 
     write(env->clients[i - 1].fd, "you have summon among us!\n", 26);
     broadcast_msg(env, env->fds[i].fd, "AMOGUS !\n", 9);
@@ -200,6 +201,15 @@ void among_us(struct chat_env *env, int i)
     close(fd);
 }
 
+static void write_nick_or_guest(int fd, struct client *client)
+{
+    if (client->nick != NULL) {
+        write(fd, client->nick, stu_strlen(client->nick));
+    } else {
+        write(fd, "Guest", 5);
+    }
+}
+
 void cmd_list(struct chat_env *env, int i)
 {
     int j;
@@ -211,11 +221,7 @@ void cmd_list(struct chat_env *env, int i)
     while (j <= env->max_clients) {
         if (env->fds[j].fd != -1) {
             write(requester_fd, "- ", 2);
-            if (env->clients[j - 1].nick != NULL) {
-                write(requester_fd, env->clients[j - 1].nick, stu_strlen(env->clients[j - 1].nick));
-            } else {
-                write(requester_fd, "Guest", 5);
-            }
+            write_nick_or_guest(requester_fd, &env->clients[j - 1]);
             if (env->fds[j].fd == requester_fd) {
                 write(requester_fd, " (you)", 6);
             }
@@ -227,10 +233,84 @@ void cmd_list(struct chat_env *env, int i)
 
 void help(struct chat_env *env, int i)
 {
-    write(env->clients[i - 1].fd, "   /nick:         for setup your nickname\n \
-  /logout:       to leave the server\n \
-  /shrek:        cat an ascii of shrek\n \
-  /among_us:     cat an ascii of among us\n \
-  /list:         allow you to see who is connected\n \
-", 215);
+    write(env->clients[i - 1].fd,
+        "   /nick:         for setup your nickname\n"
+        "   /logout:       to leave the server\n"
+        "   /shrek:        cat an ascii of shrek\n"
+        "   /among_us:     cat an ascii of among us\n"
+        "   /list:         allow you to see who is connected\n",
+        215);
+}
+
+static void broadcast_kick(struct chat_env *env, char *target_nick,
+                           unsigned int nick_len)
+{
+    char msg[128];
+    unsigned int msg_len;
+    int j;
+
+    msg_len = 0;
+    while (target_nick[msg_len] != '\0' && msg_len < 64) {
+        msg[msg_len] = target_nick[msg_len];
+        msg_len += 1;
+    }
+    msg[msg_len] = '\0';
+    j = 1;
+    while (j <= env->max_clients) {
+        if (env->fds[j].fd != -1) {
+            write(env->fds[j].fd, msg, msg_len);
+            write(env->fds[j].fd, " was kicked by an Admin\n", 24);
+        }
+        j += 1;
+    }
+    (void) nick_len;
+}
+
+static void kick_by_nick(struct chat_env *env, char *nick)
+{
+    int j;
+    char *target_nick;
+    unsigned int nick_len;
+
+    nick_len = stu_strlen(nick);
+    j = 1;
+    while (j <= env->max_clients) {
+        if (env->clients[j - 1].nick == NULL) {
+            j += 1;
+            continue;
+        }
+        target_nick = env->clients[j - 1].nick;
+        if (stu_strncmp(target_nick, nick, (int) nick_len) == 0
+            && stu_strlen(target_nick) == nick_len) {
+            write(env->clients[j - 1].fd,
+                "You have been kicked by an Admin\n", 33);
+            broadcast_kick(env, target_nick, nick_len);
+            disconnect_client(env, j);
+            write(1, "User kicked.\n", 13);
+            return;
+        }
+        j += 1;
+    }
+    write(1, "User not found.\n", 16);
+}
+
+void handle_admin(struct chat_env *env)
+{
+    char buf[256];
+    int len;
+
+    len = read(0, buf, 255);
+    if (len <= 0) {
+        return;
+    }
+    buf[len] = '\0';
+    if (buf[len - 1] == '\n') {
+        buf[len - 1] = '\0';
+        len -= 1;
+    }
+    if (stu_strncmp(buf, "/kick ", 6) == 0 && len > 6) {
+        kick_by_nick(env, buf + 6);
+    } else {
+        write(1, "Admin commands: /kick <nick>\n", 29);
+    }
 }
