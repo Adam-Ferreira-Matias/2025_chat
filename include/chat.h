@@ -13,6 +13,7 @@ struct client {
     int fd;
     char *nick;
     char *buf;
+    int id;
 };
 
 struct chat_env {
@@ -50,6 +51,9 @@ void among_us(struct chat_env *env, int i);
 void cmd_list(struct chat_env *env, int i);
 void help(struct chat_env *env, int i);
 void handle_admin(struct chat_env *env);
+void write_nick_or_guest(int fd, struct client *client);
+char *base10_to_char(int nb);
+void shutdown_server(struct chat_env *env, int i);
 
 #endif
 

@@ -35,6 +35,7 @@ void accept_client(struct chat_env *env)
         if (env->fds[i].fd == -1) {
             env->fds[i].fd = fd;
             env->clients[i - 1].fd = fd;
+            env->clients[i - 1].id = i;
             env->clients[i - 1].nick = NULL;
             return;
         }
@@ -47,15 +48,13 @@ void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len)
 {
     int i;
     int fd;
-    char *prefix;
+    struct client *sender;
 
-    prefix = "Guest";
     i = 1;
+    sender = NULL;
     while (i <= env->max_clients) {
         if (env->fds[i].fd == sender_fd) {
-            if (env->clients[i - 1].nick != NULL) {
-                prefix = env->clients[i - 1].nick;
-            }
+            sender = &env->clients[i - 1];
             break;
         }
         i += 1;
@@ -63,10 +62,10 @@ void broadcast_msg(struct chat_env *env, int sender_fd, char *msg, int len)
     i = 1;
     while (i <= env->max_clients) {
         fd = env->fds[i].fd;
-        if (fd != -1 && fd != sender_fd) {
-            write(fd, prefix, stu_strlen(prefix));
-            write(fd, " : ", 3);
-            write(fd, msg, (size_t) len);
+        if (fd != -1 && fd != sender_fd && sender != NULL) {
+            write_nick_or_guest(fd, sender);
+            write(fd, ": ", 2);
+            write(fd, msg, (size_t)len);
         }
         i += 1;
     }
@@ -201,12 +200,17 @@ void among_us(struct chat_env *env, int i)
     close(fd);
 }
 
-static void write_nick_or_guest(int fd, struct client *client)
+void write_nick_or_guest(int fd, struct client *client)
 {
+    char *num;
+
     if (client->nick != NULL) {
         write(fd, client->nick, stu_strlen(client->nick));
     } else {
+        num = base10_to_char(client->id);
         write(fd, "Guest", 5);
+        write(fd, num, stu_strlen(num));
+        free(num);
     }
 }
 
@@ -234,12 +238,12 @@ void cmd_list(struct chat_env *env, int i)
 void help(struct chat_env *env, int i)
 {
     write(env->clients[i - 1].fd,
-        "   /nick:         for setup your nickname\n"
-        "   /logout:       to leave the server\n"
-        "   /shrek:        cat an ascii of shrek\n"
-        "   /among_us:     cat an ascii of among us\n"
-        "   /list:         allow you to see who is connected\n",
-        215);
+        "   /nick         for setup your nickname\n"
+        "   /logout       to leave the server\n"
+        "   /shrek        cat an ascii of shrek\n"
+        "   /among_u      cat an ascii of among us\n"
+        "   /list         allow you to see who is connected\n",
+        210);
 }
 
 static void broadcast_kick(struct chat_env *env, char *target_nick,
@@ -297,11 +301,11 @@ static void kick_by_nick(struct chat_env *env, char *nick)
 void handle_admin(struct chat_env *env)
 {
     char buf[256];
-    int len;
+    int  len;
 
     len = read(0, buf, 255);
     if (len <= 0) {
-        return;
+        return ;
     }
     buf[len] = '\0';
     if (buf[len - 1] == '\n') {
@@ -310,7 +314,9 @@ void handle_admin(struct chat_env *env)
     }
     if (stu_strncmp(buf, "/kick ", 6) == 0 && len > 6) {
         kick_by_nick(env, buf + 6);
+    } else if (stu_strcmp(buf, "/shutdown") == 0) {
+        shutdown_server(env, 0);
     } else {
-        write(1, "Admin commands: /kick <nick>\n", 29);
+        write(1, "Admin commands: /kick <nick> | /shutdown\n", 41);
     }
 }
