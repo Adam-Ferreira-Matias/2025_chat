@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: parse file
+ * created on:  2026-06-08 - 09:06 +0200
+ * 1st author:  bastien.goodall
+ * description: file to setup server creation
+ */
+
 #include "chat.h"
 
 void init_config(struct config *settings)
