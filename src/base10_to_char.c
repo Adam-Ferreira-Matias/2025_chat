@@ -34,10 +34,10 @@ char *base10_to_char(int nb)
     i = nb_len(nb) - 1;
     while (i >= 0) {
         nb_write = get_digit(nb, i);
-        buf[i] += (nb_write + '0');
+        buf[i] = (nb_write + '0');
         i -= 1;
     }
-    buf[10] = '\0';
+    buf[nb_len(nb)] = '\0';
     return buf;
 }
 

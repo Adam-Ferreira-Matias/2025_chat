@@ -76,11 +76,11 @@ int init_server(struct config *settings)
 void shutdown_server(struct chat_env *env, int i)
 {
     i = 1;
-    while (i <= env->max_clients)
-    {
-        if (env->fds[i].fd != -1)
+    while (i <= env->max_clients) {
+        if (env->fds[i].fd != -1) {
             disconnect_client(env, i);
-        i++;
+        }
+        i += 1;
     }
     free_env(env);
     exit(0);

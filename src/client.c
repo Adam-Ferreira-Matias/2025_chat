@@ -251,8 +251,9 @@ void help(struct chat_env *env, int i)
         "   /logout       to leave the server\n"
         "   /shrek        cat an ascii of shrek\n"
         "   /among_u      cat an ascii of among us\n"
-        "   /list         allow you to see who is connected\n",
-        210);
+        "   /list         allow you to see who is connected\n"
+        "   /wisp         send a private message to someone on the server\n",
+        275);
 }
 
 static void broadcast_kick(struct chat_env *env, char *target_nick,
