@@ -26,7 +26,8 @@ void wisp(struct chat_env *env, int i)
     }
 
     if (target_index == -1) {
-        write(env->fds[i].fd, "Erreur : Utilisateur introuvable ou non connecte.\n", 50);
+        write(env->fds[i].fd,
+              "Erreur : Utilisateur introuvable ou non connecte.\n", 50);
         return;
     }
 
