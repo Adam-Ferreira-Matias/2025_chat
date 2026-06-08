@@ -3,16 +3,35 @@ CFLAGS = -Wall -Wextra -Werror -Iinclude
 
 SRC = src/main.c src/parse.c src/utils.c src/server.c \
       src/env.c src/client.c src/loop.c src/wisp.c src/base10_to_char.c
-OBJ = $(SRC:.c=.o)
-NAME = chat_server
 
-all: $(NAME)
+TEST = test/parse.c\
+	test/utils.c\
+	test/env.c \
+	test/server.c \
+	src/parse.c \
+	src/utils.c \
+	src/server.c \
+    src/env.c \
+	src/client.c \
+	src/wisp.c \
+	src/base10_to_char.c
+
+OBJS_TEST = $(TEST:.c=.o)
+OBJ = $(SRC:.c=.o)
+
+NAME = chat_server
+NAME_TEST = ut.out
+
+all: $(NAME) $(NAME_TEST)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
+$(NAME_TEST): $(OBJS_TEST)
+	$(CC) $(CFLAGS) $(OBJS_TEST) -o $(NAME_TEST) -lcriterion
+
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) $(OBJS_TEST)
 
 fclean: clean
 	rm -f $(NAME)
