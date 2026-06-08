@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: loop file
+ * created on:  2026-06-08 - 09:04 +0200
+ * 1st author:  bastien.goodall
+ * description: file for loop function
+ */
+
 #include "chat.h"
 
 void run_chat(struct chat_env *env)

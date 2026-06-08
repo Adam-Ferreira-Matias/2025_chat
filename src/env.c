@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: env file
+ * created on:  2026-06-08 - 09:03 +0200
+ * 1st author:  bastien.goodall
+ * description: file for env (free and init)
+ */
+
 #include "chat.h"
 #include <stdlib.h>
 

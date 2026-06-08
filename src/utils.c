@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: utils
+ * created on:  2026-06-08 - 09:07 +0200
+ * 1st author:  bastien.goodall
+ * description: file with all utils functions
+ */
+
 #include "chat.h"
 #include <stdlib.h>
 

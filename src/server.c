@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: server file
+ * created on:  2026-06-08 - 09:07 +0200
+ * 1st author:  bastien.goodall
+ * description: file to configure server
+ */
+
 #include "chat.h"
 #include <sys/socket.h>
 #include <netinet/in.h>

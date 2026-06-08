@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: client file
+ * created on:  2026-06-08 - 09:02 +0200
+ * 1st author:  bastien.goodall
+ * description: file with all important function for client
+ */
+
 #include <fcntl.h>
 #include <stdlib.h>
 #include <sys/socket.h>

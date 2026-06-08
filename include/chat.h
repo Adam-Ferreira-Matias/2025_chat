@@ -1,3 +1,11 @@
+/* -
+*  E89 Pedagogical & Technical Lab
+*  project: header file
+*  created on:  2026-06-08 - 09:00 +0200
+*  1st author:  bastien.goodall
+*  description: header file for clavardage
+*/
+
 #ifndef CHAT_H_
 #define CHAT_H_
 
