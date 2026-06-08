@@ -1,3 +1,11 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: main file
+ * created on:  2026-06-08 - 09:05 +0200
+ * 1st author:  bastien.goodall
+ * description: main file
+ */
+
 #include "chat.h"
 #include <unistd.h>
 

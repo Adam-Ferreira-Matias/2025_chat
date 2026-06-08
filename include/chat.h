@@ -1,3 +1,11 @@
+/* -
+*  E89 Pedagogical & Technical Lab
+*  project: header file
+*  created on:  2026-06-08 - 09:00 +0200
+*  1st author:  bastien.goodall
+*  description: header file for clavardage
+*/
+
 #ifndef CHAT_H_
 #define CHAT_H_
 
@@ -13,6 +21,7 @@ struct client {
     int fd;
     char *nick;
     char *buf;
+    int id;
 };
 
 struct chat_env {
@@ -50,5 +59,10 @@ void among_us(struct chat_env *env, int i);
 void cmd_list(struct chat_env *env, int i);
 void help(struct chat_env *env, int i);
 void wisp(struct chat_env *env, int i);
+void handle_admin(struct chat_env *env);
+void write_nick_or_guest(int fd, struct client *client);
+char *base10_to_char(int nb);
+void shutdown_server(struct chat_env *env, int i);
 
 #endif
+

@@ -1,8 +1,17 @@
+/*
+ * E89 Pedagogical & Technical Lab
+ * project: server file
+ * created on:  2026-06-08 - 09:07 +0200
+ * 1st author:  bastien.goodall
+ * description: file to configure server
+ */
+
 #include "chat.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 int configure_socket(int sock)
 {
@@ -62,4 +71,17 @@ int init_server(struct config *settings)
         return (-1);
     }
     return (sock);
+}
+
+void shutdown_server(struct chat_env *env, int i)
+{
+    i = 1;
+    while (i <= env->max_clients)
+    {
+        if (env->fds[i].fd != -1)
+            disconnect_client(env, i);
+        i++;
+    }
+    free_env(env);
+    exit(0);
 }
