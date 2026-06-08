@@ -25,6 +25,7 @@ struct chat OP_TABLE[] = {
     {"/among_us", among_us},
     {"/list", cmd_list},
     {"/help", help},
+    {"/wisp", wisp},
 };
 
 const int OP_TABLE_LEN = sizeof(OP_TABLE) / sizeof(struct chat);

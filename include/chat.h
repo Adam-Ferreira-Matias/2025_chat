@@ -58,6 +58,7 @@ void shrek(struct chat_env *env, int i);
 void among_us(struct chat_env *env, int i);
 void cmd_list(struct chat_env *env, int i);
 void help(struct chat_env *env, int i);
+void wisp(struct chat_env *env, int i);
 void handle_admin(struct chat_env *env);
 void write_nick_or_guest(int fd, struct client *client);
 char *base10_to_char(int nb);
